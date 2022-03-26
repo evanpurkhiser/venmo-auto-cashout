@@ -16,3 +16,13 @@ homepage = ""
 [build-system]
 requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"
+
+[tool.black]
+line-length=100
+target-version=['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+lines_between_sections = 1
+skip = "migrations"
