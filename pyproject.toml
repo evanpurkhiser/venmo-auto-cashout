@@ -5,7 +5,9 @@ description = "A tool to automatically cash out your Venmo balance"
 authors = [
     {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/6f5c05e636b7b27cb19412ec5676d275ebedab88.tar.gz",
+]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
 license = {text = "MIT"}
@@ -26,3 +28,5 @@ profile = "black"
 line_length = 100
 lines_between_sections = 1
 skip = "migrations"
+
+[tool.pdm]
