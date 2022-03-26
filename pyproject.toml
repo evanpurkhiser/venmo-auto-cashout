@@ -1,7 +1,7 @@
 [project]
-name = ""
+name = "venmo-auto-cashout"
 version = ""
-description = ""
+description = "A tool to automatically cash out your Venmo balance"
 authors = [
     {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
 ]
@@ -11,7 +11,7 @@ dynamic = ["classifiers"]
 license = {text = "MIT"}
 
 [project.urls]
-homepage = ""
+homepage = "https://github.com/evanpurkhiser/venmo-auto-cashout"
 
 [build-system]
 requires = ["pdm-pep517"]
