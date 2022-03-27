@@ -45,7 +45,7 @@ def run_cli():
             raise Exception("Failed to load Venmo profile")
 
         current_balance: int = me.balance
-        tran.set_data("balance", current_balance)
+        tran.set_tag("cashout_balance", current_balance)
 
         if current_balance == 0:
             tran.set_tag("has_transactions", False)
