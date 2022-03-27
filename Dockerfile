@@ -19,3 +19,5 @@ RUN pdm install
 # Add python source
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
 RUN pdm install
+
+ENTRYPOINT ["pdm", "run", "venmo-auto-cashout"]
