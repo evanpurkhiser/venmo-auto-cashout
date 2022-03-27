@@ -1,0 +1,18 @@
+name: docker build
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Pull latest image
+        run: docker pull evanpurkhiser/venmo-auto-cashout:latest
+      - name: Build
+        run: docker build --tag=evanpurkhiser/venmo-auto-cashout:latest .
+      - name: Publish
+        run: |
+          docker login --username=evanpurkhiser --password-stdin <<< "${{ secrets.DOCKER_HUB_TOKEN }}"
+          docker push evanpurkhiser/venmo-auto-cashout:latest
