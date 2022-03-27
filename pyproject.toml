@@ -1,12 +1,13 @@
 [project]
 name = "venmo-auto-cashout"
-version = ""
+version = "1.0"
 description = "A tool to automatically cash out your Venmo balance"
 authors = [
     {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
 ]
 dependencies = [
-    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/6f5c05e636b7b27cb19412ec5676d275ebedab88.tar.gz",
+    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/a77e0a972ad935656b931452c164f7b5ac812e8d.tar.gz",
+    "sentry-sdk~=1.5",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -14,6 +15,9 @@ license = {text = "MIT"}
 
 [project.urls]
 homepage = "https://github.com/evanpurkhiser/venmo-auto-cashout"
+
+[project.scripts]
+venmo-auto-cashout = "venmo_auto_cashout:main"
 
 [build-system]
 requires = ["pdm-pep517"]
@@ -30,3 +34,7 @@ lines_between_sections = 1
 skip = "migrations"
 
 [tool.pdm]
+
+[tool.pyright]
+include = ["venmo_auto_cashout"]
+extraPaths = ["__pypackages__/3.9/lib"]
