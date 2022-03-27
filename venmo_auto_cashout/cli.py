@@ -1,6 +1,7 @@
 import argparse
 from os import getenv
 from typing import List
+from sentry_sdk import start_transaction, start_span
 
 from venmo_api import Client, Transaction
 
@@ -32,71 +33,81 @@ def run_cli():
         if not args.quiet:
             print(msg)
 
-    # Venmo API client
-    venmo = Client(access_token=args.token)
+    with start_transaction(op="cashout", name="cashout") as tran:
+        tran.set_tag("dry_run", args.dry_run)
 
-    me = venmo.my_profile()
-    if not me:
-        raise Exception("Failed to load Venmo profile")
+        # Venmo API client
+        with start_span(op="init_venmo_client"):
+            venmo = Client(access_token=args.token)
 
-    current_balance: int = me.balance
+        me = venmo.my_profile()
+        if not me:
+            raise Exception("Failed to load Venmo profile")
 
-    if current_balance == 0:
-        output("Your venmo balance is zero. Nothing to do")
-        return
+        current_balance: int = me.balance
+        tran.set_data("balance", current_balance)
 
-    # XXX: There may be some leftover ammount if the transactions do not match
-    # up exactly to the current account balance.
-    remaining_balance = current_balance
-    eligable_transactions: List[Transaction] = []
+        if current_balance == 0:
+            tran.set_tag("has_transactions", False)
+            output("Your venmo balance is zero. Nothing to do")
+            return
 
-    transactions = venmo.user.get_user_transactions(user=me)
-    if transactions is None:
-        raise Exception("Failed to load trnasctions")
+        # XXX: There may be some leftover ammount if the transactions do not match
+        # up exactly to the current account balance.
+        remaining_balance = current_balance
+        eligable_transactions: List[Transaction] = []
 
-    # Produce a list of eligible transactions
-    for transaction in transactions:
-        # We're only interested in charge transactions
-        if transaction.payment_type != "charge":
-            continue
+        with start_span(op="get_transactions"):
+            transactions = venmo.user.get_user_transactions(user=me)
+            if transactions is None:
+                raise Exception("Failed to load trnasctions")
 
-        # There are no more eligable transactions once we have accounted for
-        # all of our account balance
-        if transaction.amount > remaining_balance:
-            break
+            # Produce a list of eligible transactions
+            for transaction in transactions:
+                # We're only interested in charge transactions
+                if transaction.payment_type != "charge":
+                    continue
 
-        remaining_balance = remaining_balance - transaction.amount
-        eligable_transactions.append(transaction)
+                # There are no more eligable transactions once we have accounted for
+                # all of our account balance
+                if transaction.amount > remaining_balance:
+                    break
 
-    # Show some details about what we're about to do
-    output("Your balance is ${:,.2f}".format(current_balance / 100))
-    output("There are {} transactions to cash-out".format(len(eligable_transactions)))
+                remaining_balance = remaining_balance - transaction.amount
+                eligable_transactions.append(transaction)
 
-    if len(eligable_transactions) > 0:
-        output("")
+        tran.set_tag("has_transactions", len(eligable_transactions) > 0)
 
-    for transaction in eligable_transactions:
-        output(
-            " -> Transfer: ${price:,.2f} -- {name} ({note})".format(
-                name=transaction.target.display_name,
-                price=transaction.amount / 100,
-                note=transaction.note,
+        # Show some details about what we're about to do
+        output("Your balance is ${:,.2f}".format(current_balance / 100))
+        output("There are {} transactions to cash-out".format(len(eligable_transactions)))
+
+        if len(eligable_transactions) > 0:
+            output("")
+
+        for transaction in eligable_transactions:
+            output(
+                " -> Transfer: ${price:,.2f} -- {name} ({note})".format(
+                    name=transaction.target.display_name,
+                    price=transaction.amount / 100,
+                    note=transaction.note,
+                )
             )
-        )
 
-    if remaining_balance > 0:
-        output(" -> Transfer: ${:,.2f} of remaining balance".format(remaining_balance / 100))
+        if remaining_balance > 0:
+            output(" -> Transfer: ${:,.2f} of remaining balance".format(remaining_balance / 100))
 
-    # Nothing left to do in dry-run mode
-    if args.dry_run:
-        output("\ndry-run -- Not initiating transfers")
-        return
+        # Nothing left to do in dry-run mode
+        if args.dry_run:
+            output("\ndry-run -- Not initiating transfers")
+            return
 
-    # Do the transactions
-    for transaction in eligable_transactions:
-        venmo.transfer.initiate_transfer(amount=transaction.amount)
+        # Do the transactions
+        with start_span(op="initiate_transfer"):
+            for transaction in eligable_transactions:
+                venmo.transfer.initiate_transfer(amount=transaction.amount)
 
-    if remaining_balance > 0:
-        venmo.transfer.initiate_transfer(amount=remaining_balance)
+            if remaining_balance > 0:
+                venmo.transfer.initiate_transfer(amount=remaining_balance)
 
-    output("\nAll money transfered out!")
+        output("\nAll money transfered out!")
