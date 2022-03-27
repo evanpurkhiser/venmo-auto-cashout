@@ -71,7 +71,9 @@ def run_cli():
     # Show some details about what we're about to do
     output("Your balance is ${:,.2f}".format(current_balance / 100))
     output("There are {} transactions to cash-out".format(len(eligable_transactions)))
-    output("")
+
+    if len(eligable_transactions) > 0:
+        output("")
 
     for transaction in eligable_transactions:
         output(
