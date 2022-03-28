@@ -4,6 +4,7 @@ from typing import List
 from sentry_sdk import start_transaction, start_span
 
 from venmo_api import Client, Transaction
+from venmo_auto_cashout.lunchmoney import generate_rules
 
 
 def run_cli():
@@ -17,6 +18,22 @@ def run_cli():
         default=getenv("VENMO_API_TOKEN"),
         required=not getenv("VENMO_API_TOKEN"),
         help="Your venmo API token",
+    )
+    parser.add_argument(
+        "--lunchmoney-email",
+        type=str,
+        default=getenv("LUNCHMONEY_email"),
+        help="Authenticate with Lunchmoney to add matching rules on cashout",
+    )
+    parser.add_argument(
+        "--lunchmoney-password",
+        type=str,
+        default=getenv("LUNCHMONEY_PASSWORD"),
+    )
+    parser.add_argument(
+        "--lunchmoney-otp-secret",
+        type=str,
+        default=getenv("LUNCHMONEY_OTP_SECRET"),
     )
     parser.add_argument(
         "--quiet", action=argparse.BooleanOptionalAction, help="Do not produce any output"
@@ -52,7 +69,7 @@ def run_cli():
             output("Your venmo balance is zero. Nothing to do")
             return
 
-        # XXX: There may be some leftover ammount if the transactions do not match
+        # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
         remaining_balance = current_balance
         eligable_transactions: List[Transaction] = []
@@ -109,5 +126,15 @@ def run_cli():
 
             if remaining_balance > 0:
                 venmo.transfer.initiate_transfer(amount=remaining_balance)
+
+        # Create lunchmoney rules for each transaction
+        if args.lunchmoney_email is not None:
+            with start_span(op="lunchmoney_create_rules"):
+                generate_rules(
+                    transactions=eligable_transactions,
+                    email=args.lunchmoney_email,
+                    password=args.lunchmoney_password,
+                    otp_secret=args.lunchmoney_otp_secret,
+                )
 
         output("\nAll money transfered out!")

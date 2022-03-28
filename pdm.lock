@@ -16,6 +16,11 @@ requires_python = ">=3.5"
 summary = "Internationalized Domain Names in Applications (IDNA)"
 
 [[package]]
+name = "pyotp"
+version = "2.6.0"
+summary = "Python One Time Password Library"
+
+[[package]]
 name = "requests"
 version = "2.27.1"
 requires_python = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
@@ -54,7 +59,7 @@ dependencies = [
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:299aaffb9702f3e978d5d640266bd79fad64daac4dbd4a4a71d4d14240a18389"
+content_hash = "sha256:9fe23ff70c61fb40ef267423595f5c033e6c7b714f84970b2846d61e4226ac67"
 
 [metadata.files]
 "certifi 2021.10.8" = [
@@ -68,6 +73,10 @@ content_hash = "sha256:299aaffb9702f3e978d5d640266bd79fad64daac4dbd4a4a71d4d1424
 "idna 3.3" = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
+]
+"pyotp 2.6.0" = [
+    {file = "pyotp-2.6.0-py2.py3-none-any.whl", hash = "sha256:9d144de0f8a601d6869abe1409f4a3f75f097c37b50a36a3bf165810a6e23f28"},
+    {file = "pyotp-2.6.0.tar.gz", hash = "sha256:d28ddfd40e0c1b6a6b9da961c7d47a10261fb58f378cb00f05ce88b26df9c432"},
 ]
 "requests 2.27.1" = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},

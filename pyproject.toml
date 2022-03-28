@@ -8,6 +8,8 @@ authors = [
 dependencies = [
     "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/a77e0a972ad935656b931452c164f7b5ac812e8d.tar.gz",
     "sentry-sdk~=1.5",
+    "requests~=2.27",
+    "pyotp~=2.6",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
