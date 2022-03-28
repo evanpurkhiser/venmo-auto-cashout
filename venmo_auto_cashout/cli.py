@@ -22,7 +22,7 @@ def run_cli():
     parser.add_argument(
         "--lunchmoney-email",
         type=str,
-        default=getenv("LUNCHMONEY_email"),
+        default=getenv("LUNCHMONEY_EMAIL"),
         help="Authenticate with Lunchmoney to add matching rules on cashout",
     )
     parser.add_argument(
