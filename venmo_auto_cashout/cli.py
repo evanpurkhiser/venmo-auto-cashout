@@ -1,8 +1,9 @@
 import argparse
 from os import getenv
+from time import sleep
 from typing import List
-from sentry_sdk import start_transaction, start_span
 
+from sentry_sdk import start_span, start_transaction
 from venmo_api import Client, Transaction
 from venmo_auto_cashout.lunchmoney import generate_rules
 
@@ -69,6 +70,12 @@ def run_cli():
             output("Your venmo balance is zero. Nothing to do")
             return
 
+        # Sleep for 5 seconds to make sure the transactions actually show up
+        output("Your balance is ${:,.2f}".format(current_balance / 100))
+        output("Waiting 5 seconds before querying transactions...")
+        sleep(5.0)
+
+
         # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
         remaining_balance = current_balance
@@ -96,7 +103,6 @@ def run_cli():
         tran.set_tag("has_transactions", len(eligable_transactions) > 0)
 
         # Show some details about what we're about to do
-        output("Your balance is ${:,.2f}".format(current_balance / 100))
         output("There are {} transactions to cash-out".format(len(eligable_transactions)))
 
         if len(eligable_transactions) > 0:
