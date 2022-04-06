@@ -67,7 +67,7 @@ def generate_rules(
                     "priority": f"{RULE_PRIORITY}",
                 },
                 "actions": {
-                    "notes": f"{transaction.target.first_name}: {transaction.note}",
+                    "notes": f"{transaction.payer.first_name}: {transaction.note}",
                     "tags": [RULE_VENMO_TAG_ID],
                     "stop_processing_others": True,
                     "one_time_rule": True,

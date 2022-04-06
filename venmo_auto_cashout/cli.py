@@ -87,8 +87,8 @@ def run_cli():
 
             # Produce a list of eligible transactions
             for transaction in transactions:
-                # We're only interested in charge transactions
-                if transaction.payment_type != "charge":
+                # Ignore transactions that were not paying us
+                if transaction.payee.username != me.username:
                     continue
 
                 # There are no more eligable transactions once we have accounted for
@@ -105,7 +105,7 @@ def run_cli():
         tran.set_data(
             "transactions",
             [
-                {"name": t.actor.display_name, "amount": t.amount, "note": t.note}
+                {"payer": t.payer.display_name, "amount": t.amount, "note": t.note}
                 for t in eligable_transactions
             ],
         )
@@ -119,7 +119,7 @@ def run_cli():
         for transaction in eligable_transactions:
             output(
                 " -> Transfer: ${price:,.2f} -- {name} ({note})".format(
-                    name=transaction.target.display_name,
+                    name=transaction.payer.display_name,
                     price=transaction.amount / 100,
                     note=transaction.note,
                 )
