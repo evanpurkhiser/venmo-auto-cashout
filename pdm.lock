@@ -51,7 +51,7 @@ summary = "HTTP library with thread-safe connection pooling, file post, and more
 name = "venmo-api-unofficial"
 version = "UNKNOWN"
 requires_python = ">=3.8"
-url = "https://github.com/evanpurkhiser/venmo-api-unofficial/archive/0c51725428599e0fa648b7bee63482261d48eb24.tar.gz"
+url = "https://github.com/evanpurkhiser/venmo-api-unofficial/archive/b500b2de37daa21e7322ac8a8d8beb70a0953fc9.tar.gz"
 summary = "A python client to the undocumented Venmo API"
 dependencies = [
     "requests>=2.19.0",
@@ -59,7 +59,7 @@ dependencies = [
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:430a248175c2eeb71e2b2de2fd4c482e7797eee59c16d2ebde6ffa3f52d22a84"
+content_hash = "sha256:45fc8293574c8b996700b9880bb4c080cc561fcd995ce060d2cbfa53f4ba33b2"
 
 [metadata.files]
 "certifi 2021.10.8" = [
@@ -91,5 +91,5 @@ content_hash = "sha256:430a248175c2eeb71e2b2de2fd4c482e7797eee59c16d2ebde6ffa3f5
     {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
 "venmo-api-unofficial UNKNOWN" = [
-    {file = "0c51725428599e0fa648b7bee63482261d48eb24.tar.gz", hash = "sha256:cb7dddcb8e24b3d1d9f3cd2f7d5047be5e0cf1ca16b9de6728a1b3e1f0bbd041"},
+    {file = "b500b2de37daa21e7322ac8a8d8beb70a0953fc9.tar.gz", hash = "sha256:ae7bcfc5e8fab5ff9e5f2201269b8d5dde06594a3b5307d416deb9d41687198a"},
 ]

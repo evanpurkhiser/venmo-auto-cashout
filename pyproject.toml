@@ -6,7 +6,7 @@ authors = [
     {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
 ]
 dependencies = [
-    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/0c51725428599e0fa648b7bee63482261d48eb24.tar.gz",
+    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/b500b2de37daa21e7322ac8a8d8beb70a0953fc9.tar.gz",
     "sentry-sdk~=1.5",
     "requests~=2.27",
     "pyotp~=2.6",
