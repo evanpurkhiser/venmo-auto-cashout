@@ -75,7 +75,6 @@ def run_cli():
         output("Waiting 5 seconds before querying transactions...")
         sleep(5.0)
 
-
         # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
         remaining_balance = current_balance
@@ -101,6 +100,15 @@ def run_cli():
                 eligable_transactions.append(transaction)
 
         tran.set_tag("has_transactions", len(eligable_transactions) > 0)
+        tran.set_tag("transaction_count", len(eligable_transactions))
+
+        tran.set_data(
+            "transactions",
+            [
+                {"name": t.actor.display_name, "amount": t.amount, "note": t.note}
+                for t in eligable_transactions
+            ],
+        )
 
         # Show some details about what we're about to do
         output("There are {} transactions to cash-out".format(len(eligable_transactions)))
