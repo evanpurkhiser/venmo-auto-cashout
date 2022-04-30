@@ -146,6 +146,7 @@ def run_cli():
             with start_span(op="lunchmoney_create_rules"):
                 generate_rules(
                     transactions=eligable_transactions,
+                    me=me,
                     email=args.lunchmoney_email,
                     password=args.lunchmoney_password,
                     otp_secret=args.lunchmoney_otp_secret,

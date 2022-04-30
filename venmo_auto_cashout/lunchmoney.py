@@ -3,25 +3,28 @@ from requests.sessions import Session
 import pyotp
 
 
-from venmo_api import Transaction
+from venmo_api import Transaction, User
 
 LUNCHMONEY_API = "https://api.lunchmoney.app"
 
+# Payee to match income
+PAYEE_CREDIT = "Venmo Received"
 
-# The name of the transaction on lunchmoney for Venmos
-PAYEE_MATCH = "Venmo Received"
-
+# Payee to match expenses
+PAYEE_EXPENSE = "Venmo Payed"
 
 # The priority to make the rule on lunchmoney
 RULE_PRIORITY = 5
 
+# The tag ID to associate transactions that were recieved (credited)
+RULE_VENMO_CREDIT = 31644
 
-# The tag ID to associate to the transaction
-RULE_VENMO_TAG_ID = 31644
+# The tag ID to associate transactions where it was an expense
+RULE_VENMO_EXPENSE = 33232
 
 
 def generate_rules(
-    transactions: List[Transaction], email: str, password: str, otp_secret: str = None
+    transactions: List[Transaction], me: User, email: str, password: str, otp_secret: str = None
 ):
     """
     Generates rules in lunchmoney.app for each Venmo transaction.
@@ -49,6 +52,9 @@ def generate_rules(
 
     # Create rules
     for transaction in transactions:
+        is_expense = transaction.payee.username != me.username
+        target_actor = transaction.payee if is_expense else transaction.payer
+
         session.post(
             f"{LUNCHMONEY_API}/rules",
             json={
@@ -58,17 +64,20 @@ def generate_rules(
                     "on_csv": True,
                     "amount": {
                         "match": "exactly",
-                        "type": "credits",
-                        "value_1": transaction.amount / 100 * -1,
+                        "type": "expenses" if is_expense else "credits",
+                        "value_1": transaction.amount / 100 * (1 if is_expense else -1),
                         "currency": "usd",
                         "value_2": None,
                     },
-                    "payee": {"name": PAYEE_MATCH, "match": "exact"},
+                    "payee": {
+                        "name": PAYEE_EXPENSE if is_expense else PAYEE_CREDIT,
+                        "match": "exact",
+                    },
                     "priority": f"{RULE_PRIORITY}",
                 },
                 "actions": {
-                    "notes": f"{transaction.payer.first_name}: {transaction.note}",
-                    "tags": [RULE_VENMO_TAG_ID],
+                    "notes": f"{target_actor.first_name}: {transaction.note}",
+                    "tags": [RULE_VENMO_EXPENSE if is_expense else RULE_VENMO_CREDIT],
                     "stop_processing_others": True,
                     "one_time_rule": True,
                 },
