@@ -19,15 +19,35 @@ All money transfered out!
 
 This can be used as a cron script to automatically cash out your Venmo for you.
 
-You may pass your [Lunchmoney](https://lunchmoney.app/) credentials as well to
-have the script generate single-shot rules that will match the transaction and
-apply the note from Venmo to the Lunchmoney transaction.
+### Lunchmoney integration
+
+In addition to automatic-cashout, this script can also integrate with
+[Lunchmoney](https://lunchmoney.app/) in the following two ways:
+
+- **Income**: Any time a transaction is cashed out, a [Lunchmoney
+  rule](https://support.lunchmoney.app/setup/rules) will be created that
+  matches the exact amount, and will attach the transaction note from Venmo as
+  a note on the matching Lunchmoney transaction. A tag will also be assigned
+  to help denote new Venmo charges. The rule is single use, so after the
+  matching transaction posts to your account the rule will go away.
+
+  NOTE: Currently the tag ID and Payee name are hardcoded in lunchmoney.py,
+  you may need to modify these for your use-case.
+
+- **Expenses**: The script can track and create Lunchmoney rules for _sent_
+  transactions as well. In this case a rule is created matching the exact
+  expense amount.
+
+  For this feature to work you **MUST** specify the `transaction-db` option,
+  which maintains state about which expense transactions have been seen, so
+  the script knows when new expenses appear.
 
 My main use for this is to be able to better balance my bank account by
 associating Venmo transactions back to other charges in Lunchmoney. Typically
-an incoming Venmo is a reimbursement for some other tranaction that I covered
-for friends. I split the transaction that was to cover my friends such that the
-charges net zero.
+an incoming Venmo is a reimbursement for some other transaction that I covered
+for friends. I split the transaction that was to cover my friends such that my
+categories reflect my "true spend" (e.g., I don't have a bunch of \$100+
+restaurants transactions)
 
 ### Getting your API token
 
