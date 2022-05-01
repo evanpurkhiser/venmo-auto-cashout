@@ -28,3 +28,25 @@ associating Venmo transactions back to other charges in Lunchmoney. Typically
 an incoming Venmo is a reimbursement for some other tranaction that I covered
 for friends. I split the transaction that was to cover my friends such that the
 charges net zero.
+
+### Getting your API token
+
+Assuming you have PDM setup you can run the following commands to retrieve your
+token:
+
+```
+$ pdm run python
+Python 3.9.6 (default, Aug 30 2021, 00:42:05)
+
+>>> from venmo_api import Client
+>>> Client.get_access_token(username='myemail@gmail.com', password='myPassword')
+
+IMPORTANT: Take a note of your device-id to avoid 2-factor-authentication for your next login.
+device-id: xxxx
+IMPORTANT: Your Access Token will NEVER expire, unless you logout manually (client.log_out(token)).
+Take a note of your token, so you don't have to login every time.
+
+Successfully logged in. Note your token and device-id
+access_token: xxxx
+device-id: xxxx
+```
