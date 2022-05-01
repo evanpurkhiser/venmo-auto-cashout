@@ -1,7 +1,6 @@
 import sqlite3
 import argparse
-from os import getenv, makedirs, path
-from sqlite3.dbapi2 import Connection
+from os import getenv
 from time import sleep
 from typing import List, Union
 
@@ -61,7 +60,6 @@ def run_cli():
 
     # Setup transactions table when sqlite-transaction-db option is set
     if db_path is not None:
-        makedirs(path.dirname(db_path), exist_ok=True)
         db = sqlite3.connect(db_path)
         db.cursor().execute(
             """
