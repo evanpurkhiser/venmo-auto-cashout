@@ -1,85 +1,30 @@
-from typing import List
-from requests.sessions import Session
-import pyotp
+from lunchable import LunchMoney, TransactionInsertObject
+from typing import Callable
+from venmo_auto_cashout.transaction import Transaction
 
+# Posts the given transactions to Lunch Money and returns a list of LunchMoney
+# transaction IDs of the successful posts.  Duplicate transactions will be
+# omitted from the returned list.
+def post_transactions_to_lunchmoney(
+    api_key: str,
+    log: Callable[[str], None],
+    transactions: list[Transaction],
+) -> list[str]:
+    lunchmoney_transactions = list(map(to_lunchmoney_transaction, transactions))
 
-from venmo_api import Transaction, User
+    lunch = LunchMoney(access_token=api_key)
+    return lunch.insert_transactions(
+        transactions = lunchmoney_transactions,
+        debit_as_negative = True,
+    )
 
-LUNCHMONEY_API = "https://api.lunchmoney.app"
-
-# Payee to match income
-PAYEE_CREDIT = "Venmo Received"
-
-# Payee to match expenses
-PAYEE_EXPENSE = "Venmo Payed"
-
-# The priority to make the rule on lunchmoney
-RULE_PRIORITY = 5
-
-# The tag ID to associate transactions that were recieved (credited)
-RULE_VENMO_CREDIT = 31644
-
-# The tag ID to associate transactions where it was an expense
-RULE_VENMO_EXPENSE = 33232
-
-
-def generate_rules(
-    transactions: List[Transaction], me: User, email: str, password: str, otp_secret: str = None
-):
-    """
-    Generates rules in lunchmoney.app for each Venmo transaction.
-
-    The rules will match the exact amount of the Venmo transaction and will set
-    the note from the Venmo transaction.
-    """
-    session = Session()
-
-    # Authenticate username/password
-    session.post(f"{LUNCHMONEY_API}/auth/login", json={"username": email, "password": password})
-
-    # Authenticate with TOTP if set
-    if otp_secret is not None:
-        totp = pyotp.TOTP(otp_secret)
-        totp_body = {
-            "code": totp.now(),
-            "remember": False,
-            "test": False,
-        }
-        session.post(
-            f"{LUNCHMONEY_API}/auth/totp/verify",
-            json=totp_body,
-        )
-
-    # Create rules
-    for transaction in transactions:
-        is_expense = transaction.payee.username != me.username
-        target_actor = transaction.payee if is_expense else transaction.payer
-
-        session.post(
-            f"{LUNCHMONEY_API}/rules",
-            json={
-                "conditions": {
-                    "on_plaid": True,
-                    "on_api": True,
-                    "on_csv": True,
-                    "amount": {
-                        "match": "exactly",
-                        "type": "expenses" if is_expense else "credits",
-                        "value_1": transaction.amount / 100 * (1 if is_expense else -1),
-                        "currency": "usd",
-                        "value_2": None,
-                    },
-                    "payee": {
-                        "name": PAYEE_EXPENSE if is_expense else PAYEE_CREDIT,
-                        "match": "exact",
-                    },
-                    "priority": f"{RULE_PRIORITY}",
-                },
-                "actions": {
-                    "notes": f"{target_actor.first_name}: {transaction.note}",
-                    "tags": [RULE_VENMO_EXPENSE if is_expense else RULE_VENMO_CREDIT],
-                    "stop_processing_others": True,
-                    "one_time_rule": True,
-                },
-            },
-        )
+def to_lunchmoney_transaction(transaction : Transaction) -> TransactionInsertObject:
+    note = f"{transaction.other_person()}: {transaction.note}"
+    return TransactionInsertObject(
+        amount = transaction.amount / 100.0,
+        date = transaction.created_at.date().isoformat(),
+        external_id = transaction.id,
+        notes = note,
+        payee = transaction.payee,
+        tags = ['Venmo API']
+    )

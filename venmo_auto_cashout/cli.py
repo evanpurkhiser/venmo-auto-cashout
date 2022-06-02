@@ -1,20 +1,21 @@
-import sqlite3
 import argparse
+import sqlite3
+
 from os import getenv
 from time import sleep
 from typing import List, Union
 
-
+from datetime import datetime, timedelta
 from sentry_sdk import start_span, start_transaction
 from venmo_api import Client, Transaction
-from venmo_auto_cashout.lunchmoney import generate_rules
+from venmo_auto_cashout.venmo import load_venmo_transactions
+from venmo_auto_cashout.lunchmoney import post_transactions_to_lunchmoney
 
-
+# The Command Line Interface (CLI) for venmo-to-lunch-money.
 def run_cli():
     parser = argparse.ArgumentParser(
         description="Automatically cash-out your Venmo balance as individual transfers"
     )
-
     parser.add_argument(
         "--quiet", action=argparse.BooleanOptionalAction, help="Do not produce any output"
     )
@@ -24,198 +25,55 @@ def run_cli():
         help="Do not actually initiate bank transfers",
     )
     parser.add_argument(
-        "--token",
+        "--lookback-days",
+        type=int,
+        default=30,
+        help="Number of days to lookback for fetching Venmo transactions (defaults to 30)."
+    )
+    parser.add_argument(
+        "--venmo-api-key",
         type=str,
-        default=getenv("VENMO_API_TOKEN"),
-        required=not getenv("VENMO_API_TOKEN"),
+        default=getenv("VENMO_API_KEY"),
+        required=not getenv("VENMO_API_KEY"),
         help="Your venmo API token",
     )
     parser.add_argument(
-        "--transaction-db",
+        "--lunchmoney-api-key",
         type=str,
-        default=getenv("TRANSACTION_DB"),
-        help="File to tracks which transactions have been seen, used for expense tracking",
-    )
-    parser.add_argument(
-        "--lunchmoney-email",
-        type=str,
-        default=getenv("LUNCHMONEY_EMAIL"),
-        help="Authenticate with Lunchmoney to add matching rules on cashout",
-    )
-    parser.add_argument(
-        "--lunchmoney-password",
-        type=str,
-        default=getenv("LUNCHMONEY_PASSWORD"),
-    )
-    parser.add_argument(
-        "--lunchmoney-otp-secret",
-        type=str,
-        default=getenv("LUNCHMONEY_OTP_SECRET"),
+        required=not getenv("LUNCHMONEY_API_KEY"),
+        default=getenv("LUNCHMONEY_API_KEY"),
     )
 
     args = parser.parse_args()
 
-    db_path: Union[str, None] = args.transaction_db
-    db = None
-
-    # Setup transactions table when sqlite-transaction-db option is set
-    if db_path is not None:
-        db = sqlite3.connect(db_path)
-        db.cursor().execute(
-            """
-            CREATE TABLE IF NOT EXISTS seen_transactions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                transaction_id TEXT,
-                date_created DATETIME DEFAULT (STRFTIME('%d-%m-%Y   %H:%M', 'NOW','localtime'))
-            );"""
-        )
-
-    # We can track 'expenses' when the database AND lunchmoney API are configured
-    track_expenses = db_path is not None and args.lunchmoney_email is not None
-
-    # Get list of know transaction IDs
-    seen_transaction_ids: Union[None, List[str]] = None
-
-    if db and track_expenses:
-        cursor = db.cursor()
-        cursor.execute("SELECT transaction_id FROM seen_transactions")
-        seen_transaction_ids = [row[0] for row in cursor.fetchall()]
-
-    def output(msg: str):
+    def log(message: str):
+        prefix = '[dry run]: ' if args.dry_run else ''
         if not args.quiet:
-            print(msg)
+            print(f"{prefix}{message}")
 
-    with start_transaction(op="cashout", name="cashout") as tran:
-        tran.set_tag("dry_run", args.dry_run)
+    now : datetime = datetime.utcnow()
+    start_time : datetime = datetime.combine((now - timedelta(days = args.lookback_days)), datetime.min.time())
 
-        # Venmo API client
-        with start_span(op="init_venmo_client"):
-            venmo = Client(access_token=args.token)
+    venmo_transactions : list[Transaction] = load_venmo_transactions(
+        api_key = args.venmo_api_key,
+        start_time = start_time,
+        end_time = now,
+        log = log
+    )
 
-        me = venmo.my_profile()
-        if not me:
-            raise Exception("Failed to load Venmo profile")
-
-        current_balance: int = me.balance
-        tran.set_tag("cashout_balance", "${:,.2f}".format(current_balance / 100))
-
-        if current_balance == 0 and not track_expenses:
-            tran.set_tag("has_transactions", False)
-            output("Your venmo balance is zero. Nothing to do")
-            return
-
-        # Sleep for 5 seconds to make sure the transactions actually show up
-        output("Your balance is ${:,.2f}".format(current_balance / 100))
-        output("Waiting 5 seconds before querying transactions...")
-        sleep(5.0)
-
-        # XXX: There may be some leftover amount if the transactions do not match
-        # up exactly to the current account balance.
-        remaining_balance = current_balance
-
-        income_transactions: List[Transaction] = []
-        expense_transactions: List[Transaction] = []
-
-        with start_span(op="get_transactions"):
-            transactions = venmo.user.get_user_transactions(user=me)
-
-            if transactions is None:
-                raise Exception("Failed to load trnasctions")
-
-            # Produce a list of eligible transactions
-            for transaction in transactions:
-                is_expense = transaction.payee.username != me.username
-
-                # Extract expense transactions we haven't seen yet
-                if is_expense:
-                    if track_expenses and transaction.id not in seen_transaction_ids:
-                        expense_transactions.append(transaction)
-
-                # Only track income transactions until we've exhausted the
-                # current balance
-                elif transaction.amount <= remaining_balance:
-                    remaining_balance = remaining_balance - transaction.amount
-                    income_transactions.append(transaction)
-
-        all_transactions = [*income_transactions, *expense_transactions]
-        has_transactions = len(all_transactions) > 0
-
-        tran.set_tag("has_transactions", has_transactions)
-        tran.set_tag("income_count", len(income_transactions))
-        tran.set_tag("expense_count", len(expense_transactions))
-
-        tran.set_data(
-            "income_transactions",
-            [
-                {"payer": t.payer.display_name, "amount": t.amount, "note": t.note}
-                for t in income_transactions
-            ],
-        )
-        tran.set_data(
-            "expense_transactions",
-            [
-                {"payee": t.payee.display_name, "amount": t.amount, "note": t.note}
-                for t in expense_transactions
-            ],
-        )
-
-        # Show some details about what we're about to do
-        output("There are {} income transactions to cash-out".format(len(income_transactions)))
-        output("There are {} expense transactions to track".format(len(expense_transactions)))
-
-        if has_transactions or remaining_balance > 0:
-            output("")
-
-        for transaction in income_transactions:
-            output(
-                " -> Income: +${price:,.2f} -- {name} ({note})".format(
-                    name=transaction.payer.display_name,
-                    price=transaction.amount / 100,
-                    note=transaction.note,
-                )
-            )
-
-        if remaining_balance > 0:
-            output(" -> Income: ${:,.2f} of extra balance".format(remaining_balance / 100))
-
-        for transaction in expense_transactions:
-            output(
-                " -> Expense: -${price:,.2f} -- {name} ({note})".format(
-                    name=transaction.payee.display_name,
-                    price=transaction.amount / 100,
-                    note=transaction.note,
-                )
-            )
-
-        # Nothing left to do in dry-run mode
-        if args.dry_run:
-            output("\ndry-run -- Not initiating transfers")
-            return
-
-        # Do the transactions
-        with start_span(op="initiate_transfer"):
-            for transaction in income_transactions:
-                venmo.transfer.initiate_transfer(amount=transaction.amount)
-
-            if remaining_balance > 0:
-                venmo.transfer.initiate_transfer(amount=remaining_balance)
-
-        # Create lunchmoney rules for each transaction
-        if args.lunchmoney_email is not None:
-            with start_span(op="lunchmoney_create_rules"):
-                generate_rules(
-                    transactions=all_transactions,
-                    me=me,
-                    email=args.lunchmoney_email,
-                    password=args.lunchmoney_password,
-                    otp_secret=args.lunchmoney_otp_secret,
-                )
-
-        # Update seen expense transaction
-        if db and track_expenses:
-            records = [(t.id,) for t in all_transactions]
-            cursor = db.cursor()
-            cursor.executemany("INSERT INTO seen_transactions (transaction_id) VALUES(?)", records)
-            db.commit()
-
-        output("\nAll money transfered out!")
+    log(f"Finished fetching {len(venmo_transactions)} transactions from Venmo.")
+    log(f"\n**Newest transaction:**\n{venmo_transactions[0]}")
+    log(f"\n**Oldest transaction:**\n{venmo_transactions[-1]}")
+    log(f"Attempting to post {len(venmo_transactions)} transactions to Lunch Money...")
+    if args.dry_run:
+        log(f"Dry run succeeded and did NOT post any actual data to Lunch Money!")
+        return
+    response = post_transactions_to_lunchmoney(
+        api_key=args.lunchmoney_api_key,
+        log=log,
+        transactions=venmo_transactions,
+    )
+    num_duplicates = len(venmo_transactions) - len(response)
+    if num_duplicates > 0:
+        log(f"{num_duplicates} duplicate transactions were filtered out due to already being imported to Lunch Money.")
+    log(f"Successfully posted {len(response)} new transactions to LunchMoney.")

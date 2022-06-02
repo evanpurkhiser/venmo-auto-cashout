@@ -1,11 +1,12 @@
 [project]
 name = "venmo-auto-cashout"
 version = "1.0"
-description = "A tool to automatically cash out your Venmo balance"
+description = "A tool to post Venmo transactions to Lunch Money"
 authors = [
-    {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
+    {name = "Kahlil Oppenheimer", email = "unrealkahlil@gmail.com"},
 ]
 dependencies = [
+    "lunchable~=0.1.11",
     "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/13bf98aa9b12f4b48f3326028bfd12dc5dfbbdce.tar.gz",
     "sentry-sdk~=1.5",
     "requests~=2.27",
