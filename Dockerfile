@@ -5,6 +5,9 @@ RUN apk add --update \
       openssl-dev \
     && rm -rf /var/cache/apk/*
 
+# Install sentry-cli for monitor checkins
+RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.11.0" sh
+
 WORKDIR /app
 
 # Setup PDM
@@ -20,4 +23,6 @@ RUN pdm install
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
 RUN pdm install
 
-ENTRYPOINT ["pdm", "run", "venmo-auto-cashout"]
+COPY docker_entrypoint.sh /app/docker_entrypoint.sh
+
+ENTRYPOINT ["/app/docker_entrypoint.sh"]
