@@ -23,6 +23,6 @@ RUN pdm install
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
 RUN pdm install
 
-COPY docker_entrypoint.sh /app/docker_entrypoint.sh
+COPY dockerStart.sh /app/dockerStart.sh
 
-ENTRYPOINT ["/app/docker_entrypoint.sh"]
+ENTRYPOINT ./dockerStart.sh
