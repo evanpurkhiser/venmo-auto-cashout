@@ -25,4 +25,4 @@ RUN pdm install
 
 COPY dockerStart.sh /app/dockerStart.sh
 
-ENTRYPOINT ./dockerStart.sh
+ENTRYPOINT ["./dockerStart.sh"]
