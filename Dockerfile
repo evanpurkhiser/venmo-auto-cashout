@@ -5,9 +5,6 @@ RUN apk add --update \
       openssl-dev \
     && rm -rf /var/cache/apk/*
 
-# Install sentry-cli for monitor checkins
-RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.11.0" sh
-
 WORKDIR /app
 
 # Setup PDM
