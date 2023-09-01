@@ -7,7 +7,6 @@ from typing import List, Union
 
 from sentry_sdk import start_span, start_transaction
 from venmo_api import Client, Transaction
-from venmo_auto_cashout.lunchmoney import generate_rules
 
 
 def run_cli():
@@ -36,22 +35,6 @@ def run_cli():
         default=getenv("TRANSACTION_DB"),
         help="File to tracks which transactions have been seen, used for expense tracking",
     )
-    parser.add_argument(
-        "--lunchmoney-email",
-        type=str,
-        default=getenv("LUNCHMONEY_EMAIL"),
-        help="Authenticate with Lunchmoney to add matching rules on cashout",
-    )
-    parser.add_argument(
-        "--lunchmoney-password",
-        type=str,
-        default=getenv("LUNCHMONEY_PASSWORD"),
-    )
-    parser.add_argument(
-        "--lunchmoney-otp-secret",
-        type=str,
-        default=getenv("LUNCHMONEY_OTP_SECRET"),
-    )
 
     args = parser.parse_args()
 
@@ -70,8 +53,8 @@ def run_cli():
             );"""
         )
 
-    # We can track 'expenses' when the database AND lunchmoney API are configured
-    track_expenses = db_path is not None and args.lunchmoney_email is not None
+    # We can track 'expenses' when the database is configured
+    track_expenses = db_path is not None
 
     # Get list of know transaction IDs
     seen_transaction_ids: Union[None, List[str]] = None
@@ -199,17 +182,6 @@ def run_cli():
 
             if remaining_balance > 0:
                 venmo.transfer.initiate_transfer(amount=remaining_balance)
-
-        # Create lunchmoney rules for each transaction
-        if args.lunchmoney_email is not None:
-            with start_span(op="lunchmoney_create_rules"):
-                generate_rules(
-                    transactions=all_transactions,
-                    me=me,
-                    email=args.lunchmoney_email,
-                    password=args.lunchmoney_password,
-                    otp_secret=args.lunchmoney_otp_secret,
-                )
 
         # Update seen expense transaction
         if db and track_expenses:

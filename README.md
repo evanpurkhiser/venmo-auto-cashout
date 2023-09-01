@@ -21,6 +21,9 @@ This can be used as a cron script to automatically cash out your Venmo for you.
 
 ### Lunchmoney integration
 
+> [!NOTE]
+> I am currently re-writing lunch money support, this does not currently apply.
+
 In addition to automatic-cashout, this script can also integrate with
 [Lunchmoney](https://lunchmoney.app/) in the following two ways:
 
@@ -53,6 +56,9 @@ restaurants transactions)
 
 Assuming you have PDM setup you can run the following commands to retrieve your
 token:
+
+> [!IMPORTANT]
+> You may disregard the `device-id`, we only need the token.
 
 ```
 $ pdm run python
