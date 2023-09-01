@@ -48,18 +48,19 @@ def run_cli():
             """
             CREATE TABLE IF NOT EXISTS seen_transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                transaction_id TEXT,
+                transaction_type TEXT NOT NULL,
+                transaction_id TEXT NOT NULL,
+                amount INT NOT NULL,
+                note TEXT NOT NULL,
+                target_actor TEXT NOT NULL,
                 date_created DATETIME DEFAULT (STRFTIME('%d-%m-%Y   %H:%M', 'NOW','localtime'))
             );"""
         )
 
-    # We can track 'expenses' when the database is configured
-    track_expenses = db_path is not None
-
     # Get list of know transaction IDs
     seen_transaction_ids: Union[None, List[str]] = None
 
-    if db and track_expenses:
+    if db:
         cursor = db.cursor()
         cursor.execute("SELECT transaction_id FROM seen_transactions")
         seen_transaction_ids = [row[0] for row in cursor.fetchall()]
@@ -82,7 +83,7 @@ def run_cli():
         current_balance: int = me.balance
         tran.set_tag("cashout_balance", "${:,.2f}".format(current_balance / 100))
 
-        if current_balance == 0 and not track_expenses:
+        if current_balance == 0 and not db:
             tran.set_tag("has_transactions", False)
             output("Your venmo balance is zero. Nothing to do")
             return
@@ -111,7 +112,7 @@ def run_cli():
 
                 # Extract expense transactions we haven't seen yet
                 if is_expense:
-                    if track_expenses and transaction.id not in seen_transaction_ids:
+                    if transaction.id not in seen_transaction_ids:
                         expense_transactions.append(transaction)
 
                 # Only track income transactions until we've exhausted the
@@ -184,10 +185,19 @@ def run_cli():
                 venmo.transfer.initiate_transfer(amount=remaining_balance)
 
         # Update seen expense transaction
-        if db and track_expenses:
-            records = [(t.id,) for t in all_transactions]
+        if db:
+            query = """
+            INSERT INTO seen_transactions
+            (transaction_type, transaction_id, amount, note, target_actor)
+            VALUES(?, ?, ?, ?, ?)
+            """
+            records = [
+                *[("income", t.id, t.amount, t.note, t.payer) for t in income_transactions],
+                *[("expense", t.id, t.amount, t.note, t.payee) for t in expense_transactions],
+            ]
             cursor = db.cursor()
-            cursor.executemany("INSERT INTO seen_transactions (transaction_id) VALUES(?)", records)
+            cursor.executemany(query, records)
             db.commit()
+
 
         output("\nAll money transfered out!")
