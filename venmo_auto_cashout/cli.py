@@ -8,6 +8,8 @@ from typing import List, Union
 from sentry_sdk import start_span, start_transaction
 from venmo_api import Client, Transaction
 
+from venmo_auto_cashout.lunchmoney import update_lunchmoney_transactions
+
 
 def run_cli():
     parser = argparse.ArgumentParser(
@@ -33,10 +35,28 @@ def run_cli():
         "--transaction-db",
         type=str,
         default=getenv("TRANSACTION_DB"),
-        help="File to tracks which transactions have been seen, used for expense tracking",
+        help="File to tracks which transactions have been seen. Required for LM integration",
+    )
+    parser.add_argument(
+        "--lunchmoney-token",
+        type=str,
+        default=getenv("LUNCHMONEY_TOKEN"),
+        help="Enables Lunch Money integration for tracking venmo",
+    )
+    parser.add_argument(
+        "--lunchmoney-category",
+        type=str,
+        default=getenv("LUNCHMONEY_CATEGORY"),
+        help="The Lunch Money category to look for venmo transactions",
     )
 
     args = parser.parse_args()
+
+    if args.lunchmoney_token and not args.transaction_db:
+        parser.error("--transaction-db must be specified to use the LM integration")
+
+    if len([x for x in (args.lunchmoney_token, args.lunchmoney_category) if x is not None]) == 1:
+        parser.error("--lunchmoney-{token,categry} are both required for LM integration")
 
     db_path: Union[str, None] = args.transaction_db
     db = None
@@ -53,6 +73,7 @@ def run_cli():
                 amount INT NOT NULL,
                 note TEXT NOT NULL,
                 target_actor TEXT NOT NULL,
+                lunchmoney_transaction_id INT ,
                 date_created DATETIME DEFAULT (STRFTIME('%d-%m-%Y   %H:%M', 'NOW','localtime'))
             );"""
         )
@@ -91,7 +112,7 @@ def run_cli():
         # Sleep for 5 seconds to make sure the transactions actually show up
         output("Your balance is ${:,.2f}".format(current_balance / 100))
         output("Waiting 5 seconds before querying transactions...")
-        sleep(5.0)
+        # sleep(5.0)
 
         # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
@@ -192,12 +213,26 @@ def run_cli():
             VALUES(?, ?, ?, ?, ?)
             """
             records = [
-                *[("income", t.id, t.amount, t.note, t.payer) for t in income_transactions],
-                *[("expense", t.id, t.amount, t.note, t.payee) for t in expense_transactions],
+                *[
+                    ("income", t.id, t.amount, t.note, t.payer.display_name)
+                    for t in income_transactions
+                ],
+                *[
+                    ("expense", t.id, t.amount, t.note, t.payee.display_name)
+                    for t in expense_transactions
+                ],
             ]
             cursor = db.cursor()
             cursor.executemany(query, records)
             db.commit()
 
+        # Update lunchmoney transactions
+        if db and args.lunchmoney_token:
+            update_lunchmoney_transactions(
+                db,
+                args.lunchmoney_token,
+                args.lunchmoney_category,
+                output,
+            )
 
         output("\nAll money transfered out!")

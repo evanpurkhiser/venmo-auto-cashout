@@ -21,36 +21,41 @@ This can be used as a cron script to automatically cash out your Venmo for you.
 
 ### Lunchmoney integration
 
-> [!NOTE]
-> I am currently re-writing lunch money support, this does not currently apply.
-
 In addition to automatic-cashout, this script can also integrate with
-[Lunchmoney](https://lunchmoney.app/) in the following two ways:
+[Lunchmoney](https://lunchmoney.app/).
 
-- **Income**: Any time a transaction is cashed out, a [Lunchmoney
-  rule](https://support.lunchmoney.app/setup/rules) will be created that
-  matches the exact amount, and will attach the transaction note from Venmo as
-  a note on the matching Lunchmoney transaction. A tag will also be assigned
-  to help denote new Venmo charges. The rule is single use, so after the
-  matching transaction posts to your account the rule will go away.
+The script will look for transactions in Lunch Money which are part of an
+arbitrary Venmo category, these transactions will be matched against previously
+tracked Venmo transactions by matching the exact amount.
 
-  NOTE: Currently the tag ID and Payee name are hardcoded in lunchmoney.py,
-  you may need to modify these for your use-case.
+The Lunch Money transaction will then be updated with the Payee and Note from
+the Venmo transction.
 
-- **Expenses**: The script can track and create Lunchmoney rules for _sent_
-  transactions as well. In this case a rule is created matching the exact
-  expense amount.
+You will need to specify additional flags when running the script to do this.
+It is also highly recommended that the script run on as a cron job in this case.
 
-  For this feature to work you **MUST** specify the `transaction-db` option,
-  which maintains state about which expense transactions have been seen, so
-  the script knows when new expenses appear.
+```
+$ venmo-auto-cashout --token=XXX
+Your balance is $0.00
+Waiting 5 seconds before querying transactions...
+There are 0 income transactions to cash-out
+There are 1 expense transactions to track
+
+ -> Expense: -$28.29 -- Randolf Tjandra (Volcano curry)
+
+Lunch Money Updates: 1 / 1 transactions matched
+
+ -> Randolf Tjandra (Volcano curry) → LM: 242330937
+
+All money transfered out!
+```
 
 My main use for this is to be able to better balance my bank account by
 associating Venmo transactions back to other charges in Lunchmoney. Typically
 an incoming Venmo is a reimbursement for some other transaction that I covered
-for friends. I split the transaction that was to cover my friends such that my
-categories reflect my "true spend" (e.g., I don't have a bunch of \$100+
-restaurants transactions)
+for friends. I split and then group the transaction that was to cover my
+friends such that my categories reflect my "true spend" (e.g., I don't have a
+bunch of \$100+ restaurants transactions)
 
 ### Getting your API token
 

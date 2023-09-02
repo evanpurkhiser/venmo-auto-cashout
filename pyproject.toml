@@ -10,6 +10,7 @@ dependencies = [
     "sentry-sdk~=1.5",
     "requests~=2.27",
     "pyotp~=2.6",
+    "lunchable>=0.8.2",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
@@ -34,8 +35,6 @@ profile = "black"
 line_length = 100
 lines_between_sections = 1
 skip = "migrations"
-
-[tool.pdm]
 
 [tool.pyright]
 include = ["venmo_auto_cashout"]
