@@ -57,7 +57,7 @@ def update_lunchmoney_transactions(
     @dataclass
     class VenmoRecord:
         id: int
-        transaction_type: Literal["expense"] | Literal["income"]
+        transaction_type: Literal["expense", "income"]
         amount: int
         note: str
         target_actor: str
