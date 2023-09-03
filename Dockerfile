@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.12
+FROM python:3.11-alpine
 
 RUN apk add --update \
       curl \
