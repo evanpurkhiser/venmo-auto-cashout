@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:97a815b293976ce68c28925475e7aeff8c874adf631cc97e146449c668d220b5"
+content_hash = "sha256:7d9734bba12310239d9bafc64ffdf641a6f32acafc93688a7823f39015d11a9a"
 
 [[package]]
 name = "black"
@@ -271,16 +271,6 @@ summary = "Pygments is a syntax highlighting package written in Python."
 files = [
     {file = "Pygments-2.16.1-py3-none-any.whl", hash = "sha256:13fc09fa63bc8d8671a6d247e1eb303c4b343eaee81d861f3404db2935653692"},
     {file = "Pygments-2.16.1.tar.gz", hash = "sha256:1daff0494820c69bc8941e407aa20f577374ee88364ee10a98fdbe0aece96e29"},
-]
-
-[[package]]
-name = "pyotp"
-version = "2.9.0"
-requires_python = ">=3.7"
-summary = "Python One Time Password Library"
-files = [
-    {file = "pyotp-2.9.0-py3-none-any.whl", hash = "sha256:81c2e5865b8ac55e825b0358e496e1d9387c811e85bb40e71a3b29b288963612"},
-    {file = "pyotp-2.9.0.tar.gz", hash = "sha256:346b6642e0dbdde3b4ff5a930b664ca82abfa116356ed48cc42c7d6590d36f63"},
 ]
 
 [[package]]

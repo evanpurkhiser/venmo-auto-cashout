@@ -9,7 +9,6 @@ dependencies = [
     "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/13bf98aa9b12f4b48f3326028bfd12dc5dfbbdce.tar.gz",
     "sentry-sdk~=1.5",
     "requests~=2.27",
-    "pyotp~=2.6",
     "lunchable>=0.8.2",
 ]
 requires-python = ">=3.9"
@@ -35,10 +34,6 @@ profile = "black"
 line_length = 100
 lines_between_sections = 1
 skip = "migrations"
-
-[tool.pyright]
-include = ["venmo_auto_cashout"]
-extraPaths = ["__pypackages__/3.9/lib"]
 
 [tool.pdm.dev-dependencies]
 dev = [
