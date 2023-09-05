@@ -13,7 +13,7 @@ RUN pip install pdm
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages/pdm/pep582
 
 # install python deps
-COPY pdm.lock pyproject.toml /app/
+COPY pdm.lock pyproject.toml README.md /app/
 RUN pdm install
 
 # Add python source
