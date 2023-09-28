@@ -73,7 +73,7 @@ def update_lunchmoney_transactions(
         FROM seen_transactions
         WHERE
             lunchmoney_transaction_id is NULL AND
-            date_created < date('now', '-{CUTOFF_DAYS} day')
+            date_created > date('now', '-{CUTOFF_DAYS} day')
         ORDER BY date_created DESC"""
     )
     venmo_transactions = [VenmoRecord(*row) for row in cursor.fetchall()]
