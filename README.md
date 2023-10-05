@@ -35,7 +35,7 @@ You will need to specify additional flags when running the script to do this.
 It is also highly recommended that the script run on as a cron job in this case.
 
 ```
-$ venmo-auto-cashout --token=XXX --lunchmoney-token=XXX -lunchmoney-group=z-venmo
+$ venmo-auto-cashout --token=XXX --lunchmoney-token=XXX --lunchmoney-group=z-venmo
 Your balance is $0.00
 Waiting 5 seconds before querying transactions...
 There are 0 income transactions to cash-out
