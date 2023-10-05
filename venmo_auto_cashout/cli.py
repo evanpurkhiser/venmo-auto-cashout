@@ -74,7 +74,7 @@ def run_cli():
                 note TEXT NOT NULL,
                 target_actor TEXT NOT NULL,
                 lunchmoney_transaction_id INT ,
-                date_created DATETIME DEFAULT (STRFTIME('%d-%m-%Y   %H:%M', 'NOW','localtime'))
+                date_created DATETIME DEFAULT datetime()
             );"""
         )
 
