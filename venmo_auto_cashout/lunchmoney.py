@@ -100,6 +100,9 @@ def update_lunchmoney_transactions(
             # something when it does.
             continue
 
+        # Remove the consued venmo transaction
+        venmo_transactions.remove(matching_venmo)
+
         matched_transactions.append((matching_venmo, lm_txn))
 
         # Update transaction in lunch money
