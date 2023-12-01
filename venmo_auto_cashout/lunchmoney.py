@@ -30,6 +30,9 @@ def update_lunchmoney_transactions(
     that have not already had a lunchmoney_transaction_id associated to them in
     the database.
     """
+
+    output("Updating Lunch Money transactions")
+
     lunch = LunchMoney(access_token=token)
 
     try:
