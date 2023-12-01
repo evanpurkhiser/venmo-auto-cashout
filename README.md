@@ -134,8 +134,10 @@ services:
       - LUNCHMONEY_CATEGORY=
       - SCHEDULE=0 0 * * *
     volumes:
-      - /path/to/your/transactions.db:/data/transactions.db
+      - transaction_data:/data/transactions.db
     restart: always
+volumes:
+  transaction_data:
 ```
 
 ### ENV Variables
