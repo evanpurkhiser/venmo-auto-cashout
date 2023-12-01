@@ -1,9 +1,11 @@
-FROM python:3.11-alpine
+FROM python:3.11
 
-RUN apk add --update \
-      curl \
-      openssl-dev \
-    && rm -rf /var/cache/apk/*
+RUN set -eux; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends \
+  curl \
+  cron \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*                                                                                                                │
 
 WORKDIR /app
 
@@ -18,8 +20,10 @@ RUN pdm install --production
 
 # Add python source
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
-RUN pdm install
+RUN pdm install --production
+
+ENV SCHEDULE=NONE
 
 COPY dockerStart.sh /app/dockerStart.sh
 
-ENTRYPOINT ["./dockerStart.sh"]
+CMD ["./dockerStart.sh"]
