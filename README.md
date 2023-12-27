@@ -35,7 +35,7 @@ You will need to specify additional flags when running the script to do this.
 It is also highly recommended that the script run on as a cron job in this case.
 
 ```
-$ venmo-auto-cashout --token=XXX --lunchmoney-token=XXX --lunchmoney-group=z-venmo
+$ venmo-auto-cashout --token=XXX --lunchmoney-token=XXX --lunchmoney-category=z-venmo
 Your balance is $0.00
 Waiting 5 seconds before querying transactions...
 There are 0 income transactions to cash-out
@@ -80,4 +80,15 @@ Take a note of your token, so you don't have to login every time.
 Successfully logged in. Note your token and device-id
 access_token: xxxx
 device-id: xxxx
+```
+
+### ENV Variables
+
+You can also set the following ENV variables instead of passing them as flags:
+
+```
+export VENMO_API_TOKEN=
+export TRANSACTION_DB=
+export LUNCHMONEY_TOKEN=
+export LUNCHMONEY_CATEGORY=
 ```

@@ -56,7 +56,7 @@ def run_cli():
         parser.error("--transaction-db must be specified to use the LM integration")
 
     if len([x for x in (args.lunchmoney_token, args.lunchmoney_category) if x is not None]) == 1:
-        parser.error("--lunchmoney-{token,categry} are both required for LM integration")
+        parser.error("--lunchmoney-{token,category} are both required for LM integration")
 
     db_path: Union[str, None] = args.transaction_db
     db = None
@@ -235,4 +235,4 @@ def run_cli():
                 output,
             )
 
-        output("\nAll money transfered out!")
+        output("\nAll money transferred out!")

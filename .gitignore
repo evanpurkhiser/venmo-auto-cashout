@@ -1,2 +1,6 @@
 .pdm.toml
 __pypackages__
+.pdm-python
+.envrc
+.env
+*.db
