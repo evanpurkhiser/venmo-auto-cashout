@@ -25,6 +25,11 @@ def run_cli():
         help="Do not actually initiate bank transfers",
     )
     parser.add_argument(
+        "--allow-remaining",
+        action=argparse.BooleanOptionalAction,
+        help="Allow remaining balance to be cashed-out",
+    )
+    parser.add_argument(
         "--token",
         type=str,
         default=getenv("VENMO_API_TOKEN"),
@@ -194,7 +199,12 @@ def run_cli():
 
         # Nothing left to do in dry-run mode
         if args.dry_run:
-            output("\ndry-run -- Not initiating transfers")
+            output("\ndry-run. Not initiating transfers")
+            return
+
+        # Do not cash out if
+        if not args.allow_remaining and remaining_balance > 0:
+            output("\nRemaining balance without --allow-remaining. Not initiating transfers")
             return
 
         # Do the transactions

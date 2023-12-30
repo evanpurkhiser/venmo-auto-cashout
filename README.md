@@ -5,19 +5,40 @@ each individual payment you receive will have an associated bank-transfer
 generated.
 
 ```
-$ venmo-auto-cashout --token=XXX
-Your balance is $74.95
+$ venmo-auto-cashout --token=XXX --allow-remaining
+Your balance is $50
 There are 3 transactions to cash-out
 
  -> Transfer: $15.00 -- Mako (Dia beacon museum tickets)
  -> Transfer: $15.00 -- David (Dia beacon museum tickets)
  -> Transfer: $20.00 -- Randolf (Dinner)
- -> Transfer: $24.95 of remaining balance
 
 All money transfered out!
 ```
 
 This can be used as a cron script to automatically cash out your Venmo for you.
+
+### Consistent tracking
+
+By default the tool will only cashout amounts ammounts that add up to the most
+recent transactions. This is useful when the script is running on a cron-job
+and you want to be sure it never misses an individual payment cash out (This
+can happen when the tool runs immeidatley after a payment is recieved, but
+before the payment appears in the transaction list)
+
+If you wish to cash-out everything use the `--allow-remaining` option.
+Otherwise the tool will exit when there is a remainder.
+
+```
+$ venmo-auto-cashout --token=XXX --allow-remaining
+Your balance is $39.95
+There are 3 transactions to cash-out
+
+ -> Transfer: $15.00 -- Mako (Dia beacon museum tickets)
+ -> Transfer: $24.95 of remaining balance
+
+All money transfered out!
+```
 
 ### Lunchmoney integration
 
