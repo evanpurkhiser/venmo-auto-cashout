@@ -1,8 +1,8 @@
 import sqlite3
 import argparse
 from os import getenv
-from time import sleep
 from typing import List, Union
+from datetime import datetime
 
 
 from sentry_sdk import start_span, start_transaction
@@ -95,6 +95,9 @@ def run_cli():
         if not args.quiet:
             print(msg)
 
+    # output the date and time so when this is running on a cron we know the last time it was run
+    output(f"Running venmo_auto_cashout at {datetime.now()}")
+
     with start_transaction(op="cashout", name="cashout") as tran:
         tran.set_tag("dry_run", args.dry_run)
 
@@ -114,10 +117,7 @@ def run_cli():
             output("Your venmo balance is zero. Nothing to do")
             return
 
-        # Sleep for 5 seconds to make sure the transactions actually show up
         output("Your balance is ${:,.2f}".format(current_balance / 100))
-        output("Waiting 5 seconds before querying transactions...")
-        # sleep(5.0)
 
         # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
