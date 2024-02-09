@@ -17,7 +17,9 @@ def run_cli():
     )
 
     parser.add_argument(
-        "--quiet", action=argparse.BooleanOptionalAction, help="Do not produce any output"
+        "--quiet",
+        action=argparse.BooleanOptionalAction,
+        help="Do not produce any output",
     )
     parser.add_argument(
         "--dry-run",
