@@ -1,7 +1,6 @@
 import sqlite3
 import argparse
 from os import getenv
-from time import sleep
 from typing import List, Union
 
 
@@ -116,10 +115,7 @@ def run_cli():
             output("Your venmo balance is zero. Nothing to do")
             return
 
-        # Sleep for 5 seconds to make sure the transactions actually show up
         output("Your balance is ${:,.2f}".format(current_balance / 100))
-        output("Waiting 5 seconds before querying transactions...")
-        # sleep(5.0)
 
         # XXX: There may be some leftover amount if the transactions do not match
         # up exactly to the current account balance.
