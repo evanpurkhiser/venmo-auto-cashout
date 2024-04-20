@@ -14,7 +14,7 @@ ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages/pdm/pep582
 
 # install python deps
 COPY pdm.lock pyproject.toml README.md /app/
-RUN pdm install
+RUN pdm install --production
 
 # Add python source
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
