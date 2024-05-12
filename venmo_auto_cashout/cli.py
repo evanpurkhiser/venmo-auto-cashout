@@ -30,6 +30,7 @@ def run_cli():
         "--allow-remaining",
         action=argparse.BooleanOptionalAction,
         help="Allow remaining balance to be cashed-out",
+        default=str(getenv("ALLOW_REMAINING", "False")).lower() in ("yes", "true", "t", "1"),
     )
     parser.add_argument(
         "--token",
