@@ -13,7 +13,7 @@ There are 3 transactions to cash-out
  -> Transfer: $15.00 -- David (Dia beacon museum tickets)
  -> Transfer: $20.00 -- Randolf (Dinner)
 
-All money transfered out!
+All money transferred out!
 ```
 
 This can be used as a cron script to automatically cash out your Venmo for you.
@@ -23,7 +23,7 @@ This can be used as a cron script to automatically cash out your Venmo for you.
 By default the tool will only cashout amounts ammounts that add up to the most
 recent transactions. This is useful when the script is running on a cron-job
 and you want to be sure it never misses an individual payment cash out (This
-can happen when the tool runs immeidatley after a payment is recieved, but
+can happen when the tool runs immeidatley after a payment is received, but
 before the payment appears in the transaction list)
 
 If you wish to cash-out everything use the `--allow-remaining` option.
@@ -37,7 +37,7 @@ There are 3 transactions to cash-out
  -> Transfer: $15.00 -- Mako (Dia beacon museum tickets)
  -> Transfer: $24.95 of remaining balance
 
-All money transfered out!
+All money transferred out!
 ```
 
 ### Lunchmoney integration
@@ -50,7 +50,7 @@ arbitrary Venmo category, these transactions will be matched against previously
 tracked Venmo transactions by matching the exact amount.
 
 The Lunch Money transaction will then be updated with the Payee and Note from
-the Venmo transction.
+the Venmo transaction.
 
 You will need to specify additional flags when running the script to do this.
 It is also highly recommended that the script run on as a cron job in this case.
@@ -68,7 +68,7 @@ Lunch Money Updates: 1 / 1 transactions matched
 
  -> Randolf Tjandra (Volcano curry) → LM: 242330937
 
-All money transfered out!
+All money transferred out!
 ```
 
 My main use for this is to be able to better balance my bank account by

@@ -26,7 +26,7 @@ def update_lunchmoney_transactions(
     This is done by looking up Lunch Money transactions in the provided
     `category_name`. This category should be exclusive for venmo transactions,
     usually by setting up a Lunch Money rule to place venmo income / expenses
-    into it. These transactions will then be matched against venmo transacitons
+    into it. These transactions will then be matched against venmo transactions
     that have not already had a lunchmoney_transaction_id associated to them in
     the database.
     """
