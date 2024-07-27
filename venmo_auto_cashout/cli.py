@@ -2,6 +2,7 @@ import sqlite3
 import argparse
 from os import getenv
 from typing import List, Union
+from datetime import datetime
 
 
 from sentry_sdk import start_span, start_transaction
@@ -29,6 +30,7 @@ def run_cli():
         "--allow-remaining",
         action=argparse.BooleanOptionalAction,
         help="Allow remaining balance to be cashed-out",
+        default=str(getenv("ALLOW_REMAINING", "False")).lower() in ("yes", "true", "t", "1"),
     )
     parser.add_argument(
         "--token",
@@ -95,6 +97,9 @@ def run_cli():
     def output(msg: str):
         if not args.quiet:
             print(msg)
+
+    # output the date and time so when this is running on a cron we know the last time it was run
+    output(f"Running venmo_auto_cashout at {datetime.now()}")
 
     with start_transaction(op="cashout", name="cashout") as tran:
         tran.set_tag("dry_run", args.dry_run)
