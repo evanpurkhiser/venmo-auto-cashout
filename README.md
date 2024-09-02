@@ -80,7 +80,7 @@ bunch of \$100+ restaurants transactions)
 
 ### Getting your API token
 
-Assuming you have PDM setup you can run the following commands to retrieve your
+First, you'll need to grab the [trusted device ID from a venmo login](https://github.com/mmohades/Venmo/issues/86). Assuming you have PDM setup you can run the following commands to retrieve your
 token:
 
 > [!IMPORTANT]
@@ -91,7 +91,7 @@ $ pdm run python
 Python 3.9.6 (default, Aug 30 2021, 00:42:05)
 
 >>> from venmo_api import Client
->>> Client.get_access_token(username='myemail@gmail.com', password='myPassword')
+>>> Client.get_access_token(username='myemail@gmail.com', password='myPassword', device_id="trusted-device-id")
 
 IMPORTANT: Take a note of your device-id to avoid 2-factor-authentication for your next login.
 device-id: xxxx
