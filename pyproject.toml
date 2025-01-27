@@ -2,18 +2,18 @@
 name = "venmo-auto-cashout"
 version = "1.0"
 description = "A tool to automatically cash out your Venmo balance"
-authors = [
-    {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
-]
+authors = [{ name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com" }]
 dependencies = [
-    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/13bf98aa9b12f4b48f3326028bfd12dc5dfbbdce.tar.gz",
     "sentry-sdk~=1.5",
     "lunchable>=0.8.2",
+    "apscheduler<=3.11",
+    "venmo-api-unofficial",
+    "python-decouple-typed>=3.11.0",
 ]
 requires-python = ">=3.9"
 dynamic = ["classifiers"]
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 [project.urls]
 homepage = "https://github.com/evanpurkhiser/venmo-auto-cashout"
@@ -26,8 +26,8 @@ requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"
 
 [tool.black]
-line-length=100
-target-version=['py39']
+line-length = 100
+target-version = ['py39']
 
 [tool.isort]
 profile = "black"
@@ -36,7 +36,7 @@ lines_between_sections = 1
 skip = "migrations"
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "isort>=5.12.0",
-    "black>=23.7.0",
-]
+dev = ["isort>=5.12.0", "black>=23.7.0"]
+
+[tool.uv.sources]
+venmo-api-unofficial = { git = "https://github.com/iloveitaly/venmo-api-unofficial", rev = "patch-1" }

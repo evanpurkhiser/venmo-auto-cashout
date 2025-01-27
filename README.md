@@ -103,6 +103,43 @@ access_token: xxxx
 device-id: xxxx
 ```
 
+### Running on a schedule
+
+The docker container supports running this script on a schedule. Here's how
+
+```shell
+docker pull evanpurkhiser/venmo-auto-cashout:latest
+docker run -d \
+  -e VENMO_API_TOKEN= \
+  -e TRANSACTION_DB=/data/transactions.db \
+  -e LUNCHMONEY_TOKEN= \
+  -e LUNCHMONEY_CATEGORY= \
+  -e SCHEDULE="0 0 * * *" \
+  -v /path/to/your/transactions.db:/data/transactions.db \
+  --name venmo-auto-cashout \
+  evanpurkhiser/venmo-auto-cashout:latest
+```
+
+Or, in docker compose form:
+
+```yaml
+version: '3'
+services:
+  venmo-auto-cashout:
+    image: evanpurkhiser/venmo-auto-cashout:latest
+    environment:
+      - VENMO_API_TOKEN=
+      - TRANSACTION_DB=/data/transactions.db
+      - LUNCHMONEY_TOKEN=
+      - LUNCHMONEY_CATEGORY=
+      - SCHEDULE=0 0 * * *
+    volumes:
+      - transaction_data:/data/transactions.db
+    restart: always
+volumes:
+  transaction_data:
+```
+
 ### ENV Variables
 
 You can also set the following ENV variables instead of passing them as flags:
