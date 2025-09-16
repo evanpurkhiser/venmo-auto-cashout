@@ -3,10 +3,12 @@
 
 [metadata]
 groups = ["default", "dev"]
-cross_platform = true
-static_urls = false
-lock_version = "4.3"
-content_hash = "sha256:d8778616a7ee1167c687f30ae38d1205e17c60124deb1c2da83f46a34119792c"
+strategy = ["cross_platform"]
+lock_version = "4.5.0"
+content_hash = "sha256:2cdcbd9bdba07ecdbfd7da968b5c5cf1c6f1a180a700de65306bd721d659b191"
+
+[[metadata.targets]]
+requires_python = ">=3.9"
 
 [[package]]
 name = "black"
@@ -348,12 +350,13 @@ files = [
 
 [[package]]
 name = "venmo-api-unofficial"
+version = "0.0.1"
 requires_python = ">=3.8"
-url = "https://github.com/evanpurkhiser/venmo-api-unofficial/archive/13bf98aa9b12f4b48f3326028bfd12dc5dfbbdce.tar.gz"
+url = "https://github.com/evanpurkhiser/venmo-api-unofficial/archive/3e290a575ac2f638cc82a3d1a1580bf41bf503aa.tar.gz"
 summary = "A python client to the undocumented Venmo API"
 dependencies = [
     "requests>=2.19.0",
 ]
 files = [
-    {file = "13bf98aa9b12f4b48f3326028bfd12dc5dfbbdce.tar.gz", hash = "sha256:3672f12ae51ba5c935081e1fb23237086c7275b572ee481a75e007b3cf83fdaa"},
+    {file = "3e290a575ac2f638cc82a3d1a1580bf41bf503aa.tar.gz", hash = "sha256:5e9d9c4a38077f0a5ec4c69177ddeb1912a6ee6c73c89975b7713a7bf41a852d"},
 ]
