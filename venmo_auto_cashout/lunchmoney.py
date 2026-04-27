@@ -1,11 +1,10 @@
 from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Callable, List, Literal, Tuple
-from lunchable import LunchMoney
-
 from sqlite3 import Connection
+from typing import Callable, List, Literal, Tuple
 
+from lunchable import LunchMoney
 from lunchable.models.transactions import TransactionObject, TransactionUpdateObject
 
 # How many days back will we try and look for matching transactions? Anything
@@ -52,7 +51,8 @@ def update_lunchmoney_transactions(
         )
         if
         # Ignore grouped transactions
-        transaction.group_id is None and
+        transaction.group_id is None
+        and
         # Transactions with notes have already been updated
         transaction.notes is None
     ]

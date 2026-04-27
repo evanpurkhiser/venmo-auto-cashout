@@ -1,8 +1,7 @@
-import sqlite3
 import argparse
+import sqlite3
 from os import getenv
 from typing import List, Union
-
 
 from sentry_sdk import start_span, start_transaction
 from venmo_api import Client, Transaction

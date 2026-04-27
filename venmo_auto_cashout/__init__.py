@@ -1,7 +1,8 @@
 from os import getenv
 
-from venmo_auto_cashout.cli import run_cli
 import sentry_sdk
+
+from venmo_auto_cashout.cli import run_cli
 
 sentry_dsn = getenv("SENTRY_DSN")
 if sentry_dsn is not None:
