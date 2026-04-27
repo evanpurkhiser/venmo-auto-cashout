@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-exec pdm run venmo-auto-cashout
+exec venmo-auto-cashout

@@ -80,14 +80,14 @@ bunch of \$100+ restaurants transactions)
 
 ### Getting your API token
 
-First, you'll need to grab the [trusted device ID from a venmo login](https://github.com/mmohades/Venmo/issues/86). Assuming you have PDM setup you can run the following commands to retrieve your
+First, you'll need to grab the [trusted device ID from a venmo login](https://github.com/mmohades/Venmo/issues/86). Assuming you have [uv](https://docs.astral.sh/uv/) setup you can run the following commands to retrieve your
 token:
 
 > [!IMPORTANT]
 > You may disregard the `device-id`, we only need the token.
 
 ```
-$ pdm run python
+$ uv run python
 Python 3.9.6 (default, Aug 30 2021, 00:42:05)
 
 >>> from venmo_api import Client

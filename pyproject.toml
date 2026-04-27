@@ -8,10 +8,9 @@ authors = [
 dependencies = [
     "sentry-sdk~=1.5",
     "lunchable>=0.8.2",
-    "venmo-api-unofficial @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/3e290a575ac2f638cc82a3d1a1580bf41bf503aa.tar.gz",
+    "venmo-api-unoffical @ https://github.com/evanpurkhiser/venmo-api-unofficial/archive/3e290a575ac2f638cc82a3d1a1580bf41bf503aa.tar.gz",
 ]
 requires-python = ">=3.9"
-dynamic = ["classifiers"]
 readme = "README.md"
 license = {text = "MIT"}
 
@@ -22,8 +21,19 @@ homepage = "https://github.com/evanpurkhiser/venmo-auto-cashout"
 venmo-auto-cashout = "venmo_auto_cashout:main"
 
 [build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["venmo_auto_cashout"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6.0",
+]
 
 [tool.ruff]
 line-length = 100
@@ -34,8 +44,3 @@ extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 lines-between-types = 0
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "ruff>=0.6.0",
-]

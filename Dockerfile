@@ -5,20 +5,23 @@ RUN apk add --update \
       openssl-dev \
     && rm -rf /var/cache/apk/*
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
 WORKDIR /app
 
-# Setup PDM
-ENV PIP_DISABLE_PIP_VERSION_CHECK=on
-RUN pip install pdm
-ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages/pdm/pep582
+ENV UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1 \
+    UV_PYTHON_DOWNLOADS=never
 
-# install python deps
-COPY pdm.lock pyproject.toml README.md /app/
-RUN pdm install --production
+# Install dependencies first for better layer caching
+COPY uv.lock pyproject.toml README.md /app/
+RUN uv sync --frozen --no-install-project --no-dev
 
-# Add python source
+# Add python source and install the project
 COPY venmo_auto_cashout /app/venmo_auto_cashout/
-RUN pdm install
+RUN uv sync --frozen --no-dev
+
+ENV PATH="/app/.venv/bin:$PATH"
 
 COPY dockerStart.sh /app/dockerStart.sh
 

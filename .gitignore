@@ -1,6 +1,4 @@
-.pdm.toml
-__pypackages__
-.pdm-python
+.venv
 .envrc
 .env
 *.db
