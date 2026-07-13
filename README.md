@@ -20,7 +20,7 @@ This can be used as a cron script to automatically cash out your Venmo for you.
 
 ### Consistent tracking
 
-By default the tool will only cashout amounts ammounts that add up to the most
+By default the tool will only cashout amounts that add up to the most
 recent transactions. This is useful when the script is running on a cron-job
 and you want to be sure it never misses an individual payment cash out (This
 can happen when the tool runs immeidatley after a payment is received, but
