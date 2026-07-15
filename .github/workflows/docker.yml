@@ -8,6 +8,6 @@ jobs:
     permissions:
       packages: write
 
-    uses: evanpurkhiser/workflows/.github/workflows/docker.yml@main
+    uses: evanpurkhiser/workflows/.github/workflows/docker.yml@main # zizmor: ignore[unpinned-uses]
     with:
       publish: ${{ github.ref == 'refs/heads/main' }}
