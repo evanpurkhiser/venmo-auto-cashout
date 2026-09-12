@@ -3,7 +3,7 @@ name = "venmo-auto-cashout"
 version = "1.0"
 description = "A tool to automatically cash out your Venmo balance"
 authors = [
-    {name = "Evan Purkhiser", email = "evanpurkhiser@gmail.com"},
+    {name = "Evan Purkhiser", email = "venmo-auto-cashout.py@evanpurkhiser.com"},
 ]
 dependencies = [
     "sentry-sdk~=1.5",
