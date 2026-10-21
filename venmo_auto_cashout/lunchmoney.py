@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from sqlite3 import Connection
 from typing import Callable, List, Literal, Tuple
@@ -42,12 +42,13 @@ def update_lunchmoney_transactions(
         return
 
     # Find lunch money transactiosn that haven't been updated
+    today = date.today()
     lm_transactions = [
         transaction
         for transaction in lunch.get_transactions(
             category_id=category.id,
-            start_date=datetime.now() - timedelta(days=CUTOFF_DAYS),
-            end_date=datetime.now(),
+            start_date=today - timedelta(days=CUTOFF_DAYS),
+            end_date=today,
         )
         if
         # Ignore grouped transactions
