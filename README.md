@@ -1,10 +1,10 @@
-## Venmo Auto Cashout
+# Venmo Auto Cashout
 
-This is a small tool for automatically cashing out your Venmo balance such that
-each individual payment you receive will have an associated bank-transfer
+This is a small tool for automatically cashing out your Venmo balance such
+that each individual payment you receive will have an associated bank-transfer
 generated.
 
-```
+```text
 $ venmo-auto-cashout --token=XXX --allow-remaining
 Your balance is $50
 There are 3 transactions to cash-out
@@ -18,18 +18,19 @@ All money transferred out!
 
 This can be used as a cron script to automatically cash out your Venmo for you.
 
-### Consistent tracking
+## Consistent tracking
 
-By default the tool will only cashout amounts that add up to the most
-recent transactions. This is useful when the script is running on a cron-job
-and you want to be sure it never misses an individual payment cash out (This
-can happen when the tool runs immeidatley after a payment is received, but
-before the payment appears in the transaction list)
+By default the tool will only cashout amounts
+that add up to the most recent transactions.
+This is useful when the script is running on a cron-job
+and you want to be sure it never misses an individual payment cash out
+(This can happen when the tool runs immeidatley after a payment is received,
+but before the payment appears in the transaction list)
 
 If you wish to cash-out everything use the `--allow-remaining` option.
 Otherwise the tool will exit when there is a remainder.
 
-```
+```text
 $ venmo-auto-cashout --token=XXX --allow-remaining
 Your balance is $39.95
 There are 3 transactions to cash-out
@@ -42,20 +43,21 @@ All money transferred out!
 
 ### Lunchmoney integration
 
-In addition to automatic-cashout, this script can also integrate with
-[Lunchmoney](https://lunchmoney.app/).
+In addition to automatic-cashout,
+this script can also integrate with [Lunchmoney](https://lunchmoney.app/).
 
-The script will look for transactions in Lunch Money which are part of an
-arbitrary Venmo category, these transactions will be matched against previously
-tracked Venmo transactions by matching the exact amount.
+The script will look for transactions in Lunch Money
+which are part of an arbitrary Venmo category,
+these transactions will be matched against previously tracked Venmo transactions
+by matching the exact amount.
 
-The Lunch Money transaction will then be updated with the Payee and Note from
-the Venmo transaction.
+The Lunch Money transaction will then be updated with the Payee
+and Note from the Venmo transaction.
 
 You will need to specify additional flags when running the script to do this.
 It is also highly recommended that the script run on as a cron job in this case.
 
-```
+```text
 $ venmo-auto-cashout --token=XXX --lunchmoney-token=XXX --lunchmoney-category=z-venmo
 Your balance is $0.00
 Waiting 5 seconds before querying transactions...
@@ -72,21 +74,24 @@ All money transferred out!
 ```
 
 My main use for this is to be able to better balance my bank account by
-associating Venmo transactions back to other charges in Lunchmoney. Typically
-an incoming Venmo is a reimbursement for some other transaction that I covered
-for friends. I split and then group the transaction that was to cover my
-friends such that my categories reflect my "true spend" (e.g., I don't have a
-bunch of \$100+ restaurants transactions)
+associating Venmo transactions back to other charges in Lunchmoney.
+Typically an incoming Venmo is a reimbursement for some other transaction
+that I covered for friends.
+I split and then group the transaction that was to cover my friends such
+that my categories reflect my "true spend"
+(e.g., I don't have a bunch of \$100+ restaurants transactions)
 
 ### Getting your API token
 
-First, you'll need to grab the [trusted device ID from a venmo login](https://github.com/mmohades/Venmo/issues/86). Assuming you have [uv](https://docs.astral.sh/uv/) setup you can run the following commands to retrieve your
-token:
+First, you'll need to grab the
+[trusted device ID from a venmo login](https://github.com/mmohades/Venmo/issues/86).
+Assuming you have [uv](https://docs.astral.sh/uv/) setup you can run the
+following commands to retrieve your token:
 
 > [!IMPORTANT]
 > You may disregard the `device-id`, we only need the token.
 
-```
+```text
 $ uv run python
 Python 3.9.6 (default, Aug 30 2021, 00:42:05)
 
@@ -107,7 +112,7 @@ device-id: xxxx
 
 You can also set the following ENV variables instead of passing them as flags:
 
-```
+```text
 export VENMO_API_TOKEN=
 export TRANSACTION_DB=
 export LUNCHMONEY_TOKEN=
